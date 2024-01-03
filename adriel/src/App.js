@@ -1,12 +1,14 @@
-import logo from './logo.svg';
-import './App.css';
 import Clock from './Clock';
+import { Provider } from 'react-redux';
+import store from './store';
 
 
 function App() {
   return (
     <div className="App">
-      <Clock />
+      <Provider store={store}>
+        <Clock />
+      </Provider>
     </div>
   );
 }
