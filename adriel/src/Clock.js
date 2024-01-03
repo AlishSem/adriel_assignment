@@ -52,15 +52,14 @@ const Clock = () => {
 
 
   useEffect(() => {
-    // Add event listener for mouse movement on the clock face
+    // event listener for mouse movement on the clock face
     const clockFace = document.querySelector('.clock-face');
     clockFace.addEventListener('mousemove', handleMouseMove);
 
-    // Remove the event listener when the component unmounts
     return () => {
       clockFace.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []); // Only run this effect once during component mount
+  }, []);
 
 
   return (
