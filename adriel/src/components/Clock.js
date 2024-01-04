@@ -1,18 +1,16 @@
-import React, { useEffect } from 'react';
-import './Clock.css';
-import { Tooltip } from 'react-tooltip'
+import React, { useEffect, useRef } from 'react';
+import '../Clock.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateTime } from './reducers/clockReducer';
-import { updatePlacement } from './reducers/tooltipReducer';
-
+import { updateTime } from '../reducers/clockReducer';
+import { updatePlacement } from '../reducers/tooltipReducer';
+import TooltipComponent from './TooltipComponent';
 
 const Clock = () => {
 
   const dispatch = useDispatch();
+  const clockFaceRef = useRef();
   const timestamp = useSelector((state) => state.clock.time);
   const time = new Date(timestamp); 
-  const tooltipPlacement = useSelector((state) => state.tooltip.placement); 
-
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -23,9 +21,19 @@ const Clock = () => {
     return () => clearInterval(intervalId);
   }, [dispatch]);
 
+  useEffect(() => {
+    // event listener for mouse movement on the clock face
+    const clockFace = clockFaceRef.current;
+    clockFace.addEventListener('mousemove', handleMouseMove);
 
+    return () => {
+      clockFace.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
+  
   const handleMouseMove = (event) => {
-    const clockFace = document.querySelector('.clock-face');
+    const clockFace = clockFaceRef.current;
     const rect = clockFace.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
@@ -51,20 +59,9 @@ const Clock = () => {
   };
 
 
-  useEffect(() => {
-    // event listener for mouse movement on the clock face
-    const clockFace = document.querySelector('.clock-face');
-    clockFace.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      clockFace.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
-
-
   return (
     <>
-        <div className="clock-face" id='clock' data-tooltip-id="my-tooltip">
+        <div className="clock-face" ref={clockFaceRef} id='clock' data-tooltip-id="my-tooltip">
             <div
             className="hand hour-hand"
             style={{ transform: `rotate(${(time.getHours() % 12) * 30 + time.getMinutes() * 0.5}deg)` }}></div>
@@ -73,16 +70,7 @@ const Clock = () => {
             <div className="hand second-hand" style={{ transform: `rotate(${time.getSeconds() * 6}deg)` }}></div>
             )}
         </div>
-
-        <Tooltip
-        anchorSelect="#clock"
-        id="my-tooltip"
-        place={tooltipPlacement}>
-            <div>
-                <p>Current Time:</p>
-                <p>{time.toLocaleTimeString()}</p>
-            </div>
-        </Tooltip>
+        <TooltipComponent/>
     </>
   );
 };

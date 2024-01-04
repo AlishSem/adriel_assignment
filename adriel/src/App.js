@@ -1,4 +1,4 @@
-import Clock from './Clock';
+import Clock from './components/Clock';
 import { Provider } from 'react-redux';
 import store from './store';
 
